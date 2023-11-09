@@ -1,41 +1,76 @@
 import java.util.*;
-class FCFS
-{
+ 
+public class FCFS {
 public static void main(String args[])
 {
-Scanner in=new Scanner(System.in);
-int p;
-float t1=0,t2=0;
-System.out.println("Enter number of processes");
-p=in.nextInt();
-int bt[]=new int[p];
-
-System.out.println("Enter burst time");
-for(int i=0;i<p;i++)
+Scanner sc = new Scanner(System.in);
+System.out.println("enter no of process: ");
+int n = sc.nextInt();
+int pid[] = new int[n];   // process ids
+int ar[] = new int[n];     // arrival times
+int bt[] = new int[n];     // burst or execution times
+int ct[] = new int[n];     // completion times
+int ta[] = new int[n];     // turn around times
+int wt[] = new int[n];     // waiting times
+int temp;
+float avgwt=0,avgta=0;
+ 
+for(int i = 0; i < n; i++)
 {
-System.out.println("Burst time for P"+(i+1)+"=");
-bt[i]=in.nextInt();
+System.out.println("enter process " + (i+1) + " arrival time: ");
+ar[i] = sc.nextInt();
+System.out.println("enter process " + (i+1) + " brust time: ");
+bt[i] = sc.nextInt();
+pid[i] = i+1;
 }
-int wt[]=new int[p];
-wt[0]=0;
-for(int i=1;i<p;i++)
+ 
+//sorting according to arrival times
+for(int i = 0 ; i <n; i++)
 {
-wt[i]=bt[i-1]+wt[i-1];
-t1+=wt[i];
-}
-int tat[]=new int[p];
-for(int i=0;i<p;i++)
+for(int  j=0;  j < n-(i+1) ; j++)
 {
-tat[i]=bt[i]+wt[i];
-t2+=tat[i];
-}
-System.out.println("Process\tBurst time\tWaiting time\tTurn Around time");
-for(int i=0;i<p;i++)
+if( ar[j] > ar[j+1] )
 {
-System.out.println("P"+(i+1)+"\t\t"+bt[i]+"\t\t"+wt[i]+"\t\t"+tat[i]);
+temp = ar[j];
+ar[j] = ar[j+1];
+ar[j+1] = temp;
+temp = bt[j];
+bt[j] = bt[j+1];
+bt[j+1] = temp;
+temp = pid[j];
+pid[j] = pid[j+1];
+pid[j+1] = temp;
 }
-float awt,atat;
-System.out.println("Average Waiting time="+t1/p);
-System.out.println("Average Turn Around time="+t2/p);
+}
+}
+// finding completion times
+for(int  i = 0 ; i < n; i++)
+{
+if( i == 0)
+{
+ct[i] = ar[i] + bt[i];
+}
+else
+{
+if( ar[i] > ct[i-1])
+{
+ct[i] = ar[i] + bt[i];
+}
+else
+ct[i] = ct[i-1] + bt[i];
+}
+ta[i] = ct[i] - ar[i] ;          // turnaround time= completion time- arrival time
+wt[i] = ta[i] - bt[i] ;          // waiting time= turnaround time- burst time
+avgwt += wt[i] ;               // total waiting time
+avgta += ta[i] ;               // total turnaround time
+}
+System.out.println("\npid  arrival  brust  complete turn waiting");
+for(int  i = 0 ; i< n;  i++)
+{
+System.out.println(pid[i] + "  \t " + ar[i] + "\t" + bt[i] + "\t" + ct[i] + "\t" + ta[i] + "\t"  + wt[i] ) ;
+}
+sc.close();
+System.out.println("\naverage waiting time: "+ (avgwt/n));     // printing average waiting time.
+System.out.println("average turnaround time:"+(avgta/n));    // printing average turnaround time.
 }
 }
