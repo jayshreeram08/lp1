@@ -1,16 +1,22 @@
-PS C:\Users\bhosa\OneDrive\Desktop> java FCFS
-Enter number of processes
+enter no of process: 
 3
-Enter burst time
-Burst time for P1=
-10
-Burst time for P2=
-5
-Burst time for P3=
-8
-Process Burst time      Waiting time    Turn Around time
-P1              10              0               10
-P2              5               10              15
-P3              8               15              23
-Average Waiting time=8.333333
-Average Turn Around time=16.0
+enter process 1 arrival time: 
+0
+enter process 1 brust time: 
+9
+enter process 2 arrival time: 
+1
+enter process 2 brust time: 
+4
+enter process 3 arrival time: 
+2
+enter process 3 brust time: 
+9
+
+pid  arrival  brust  complete turn waiting
+1  	 0	       9	     9	      9	   0
+2  	 1	       4	    13	     12    8
+3  	 2	       9	    22	     20	  11
+
+average waiting time: 6.3333335
+average turnaround time:13.666667
