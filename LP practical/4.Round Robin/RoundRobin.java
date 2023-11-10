@@ -51,12 +51,12 @@ public class RoundRobin {
         findWaitingTime(processes, n, bt, at, wt, tat, ct, quantum);
         findTurnAroundTime(processes, n, bt, wt, tat);
 
-        System.out.println("PN " + " AT " + " BT " + " CT " + " WT " + " TAT");
+        System.out.println("PN\tAT\tBT\tCT\tWT\tTAT");
         for (int i = 0; i < n; i++) {
             ct = at[i] + tat[i];  // Completion time is arrival time + turnaround time
             total_wt += wt[i];
             total_tat += tat[i];
-            System.out.println(" " + processes[i] + "\t " + at[i] + "\t " + bt[i] + "\t " + ct + "\t " + wt[i] + "\t " + tat[i]);
+            System.out.println(processes[i] + "\t" + at[i] + "\t" + bt[i] + "\t" + ct + "\t" + wt[i] + "\t" + tat[i]);
         }
 
         System.out.println("Average waiting time = " + (float) total_wt / (float) n);
