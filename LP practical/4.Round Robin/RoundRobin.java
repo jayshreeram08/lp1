@@ -1,75 +1,85 @@
-import java.util.*;
+import java.util.Scanner;
 
 public class RoundRobin {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
+    static void findWaitingTime(String processes[], int n, int bt[], int at[], int wt[], int quantum) {
+        int rem_bt[] = new int[n];
+        for (int i = 0; i < n; i++)
+            rem_bt[i] = bt[i];
 
-        System.out.println("Enter the number of processes:");
-        int n = sc.nextInt();
-
-        int[] process = new int[n];
-        int[] burstTime = new int[n];
-        int[] remainingTime = new int[n];
-
-        System.out.println("Enter time quantum:");
-        int timeQuantum = sc.nextInt();
-
-        // Input process and burst time for each process
-        for (int i = 0; i < n; i++) {
-            process[i] = i + 1;
-            System.out.println("Enter burst time for Process " + (i + 1) + ":");
-            burstTime[i] = sc.nextInt();
-            remainingTime[i] = burstTime[i];
-        }
-
-        // Initialize variables
-        int currentTime = 0;
-        boolean[] completed = new boolean[n];
-
-        System.out.println("\nGantt Chart:");
-        System.out.print("0");
-        int totalTurnaroundTime = 0;
-        int totalWaitingTime = 0;
-
-        // Simulate Round Robin
+        int t = 0;
         while (true) {
-            boolean allCompleted = true;
+            boolean done = true;
 
             for (int i = 0; i < n; i++) {
-                if (!completed[i]) {
-                    allCompleted = false;
-                    if (remainingTime[i] > 0) {
-                        int executeTime = Math.min(timeQuantum, remainingTime[i]);
-                        currentTime += executeTime;
-                        remainingTime[i] -= executeTime;
-
-                        System.out.print(" -> P" + process[i]);
-
-                        if (remainingTime[i] == 0) {
-                            completed[i] = true;
-                            int turnaroundTime = currentTime;
-                            totalTurnaroundTime += turnaroundTime;
-                            int waitingTime = turnaroundTime - burstTime[i];
-                            totalWaitingTime += waitingTime;
-                        }
+                if (rem_bt[i] > 0 && at[i] <= t) {
+                    done = false;
+                    if (rem_bt[i] > quantum) {
+                        t += quantum;
+                        rem_bt[i] -= quantum;
+                    } else {
+                        t = t + rem_bt[i];
+                        wt[i] = t - bt[i];
+                        rem_bt[i] = 0;
                     }
                 }
             }
 
-            if (allCompleted) {
+            if (done)
                 break;
-            }
         }
+    }
 
-        System.out.println("\n\nProcess\tBurst Time\tTurnaround Time\tWaiting Time");
+    static void findTurnAroundTime(String processes[], int n, int bt[], int wt[], int tat[]) {
+        for (int i = 0; i < n; i++)
+            tat[i] = bt[i] + wt[i];
+    }
+
+    static void findavgTime(String processes[], int n, int at[], int bt[], int quantum) {
+        Scanner scanner = new Scanner(System.in);
+        int wt[] = new int[n];
+        int tat[] = new int[n];
+        int total_wt = 0, total_tat = 0;
 
         for (int i = 0; i < n; i++) {
-            System.out.println("P" + process[i] + "\t\t" + burstTime[i] + "\t\t" + (currentTime - (burstTime[i] - remainingTime[i])) + "\t\t" + (currentTime - (burstTime[i] - remainingTime[i]) - burstTime[i]));
+            System.out.print("Enter arrival time for process " + processes[i] + ": ");
+            at[i] = scanner.nextInt();
+            System.out.print("Enter burst time for process " + processes[i] + ": ");
+            bt[i] = scanner.nextInt();
         }
 
-        System.out.println("\nAverage Turnaround Time: " + (float) totalTurnaroundTime / n);
-        System.out.println("Average Waiting Time: " + (float) totalWaitingTime / n);
+        findWaitingTime(processes, n, bt, at, wt, quantum);
+        findTurnAroundTime(processes, n, bt, wt, tat);
 
-        sc.close();
+        System.out.println("PN " + " AT " + " BT " + " WT " + " TAT");
+        for (int i = 0; i < n; i++) {
+            total_wt = total_wt + wt[i];
+            total_tat = total_tat + tat[i];
+            System.out.println(" " + processes[i] + "\t " + at[i] + "\t " + bt[i] + "\t " + wt[i] + "\t " + tat[i]);
+        }
+
+        System.out.println("Average waiting time = " + (float) total_wt / (float) n);
+        System.out.println("Average turn around time = " + (float) total_tat / (float) n);
+
+        scanner.close();
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the number of processes: ");
+        int n = scanner.nextInt();
+        String processes[] = new String[n];
+        int at[] = new int[n];
+        int bt[] = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            processes[i] = "P" + (i + 1);
+        }
+
+        System.out.print("Enter time quantum: ");
+        int quantum = scanner.nextInt();
+
+        findavgTime(processes, n, at, bt, quantum);
+
+        scanner.close();
     }
 }
