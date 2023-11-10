@@ -1,14 +1,15 @@
 import java.util.Scanner;
 
 public class RoundRobin {
-    static void findWaitingTime(String processes[], int n, int bt[], int at[], int wt[], int quantum) {
+    static void findWaitingTime(String processes[], int n, int bt[], int at[], int wt[], int tat[], int ct, int quantum) {
         int rem_bt[] = new int[n];
         for (int i = 0; i < n; i++)
             rem_bt[i] = bt[i];
 
         int t = 0;
-        while (true) {
-            boolean done = true;
+        boolean done = false;
+        while (!done) {
+            done = true;
 
             for (int i = 0; i < n; i++) {
                 if (rem_bt[i] > 0 && at[i] <= t) {
@@ -18,14 +19,13 @@ public class RoundRobin {
                         rem_bt[i] -= quantum;
                     } else {
                         t = t + rem_bt[i];
-                        wt[i] = t - bt[i];
+                        wt[i] = t - bt[i] - at[i];
                         rem_bt[i] = 0;
+                        ct = t;  // Completion time for this process
+                        tat[i] = bt[i] + wt[i];
                     }
                 }
             }
-
-            if (done)
-                break;
         }
     }
 
@@ -39,6 +39,7 @@ public class RoundRobin {
         int wt[] = new int[n];
         int tat[] = new int[n];
         int total_wt = 0, total_tat = 0;
+        int ct = 0;  // Completion time initially set to 0
 
         for (int i = 0; i < n; i++) {
             System.out.print("Enter arrival time for process " + processes[i] + ": ");
@@ -47,14 +48,15 @@ public class RoundRobin {
             bt[i] = scanner.nextInt();
         }
 
-        findWaitingTime(processes, n, bt, at, wt, quantum);
+        findWaitingTime(processes, n, bt, at, wt, tat, ct, quantum);
         findTurnAroundTime(processes, n, bt, wt, tat);
 
-        System.out.println("PN " + " AT " + " BT " + " WT " + " TAT");
+        System.out.println("PN " + " AT " + " BT " + " CT " + " WT " + " TAT");
         for (int i = 0; i < n; i++) {
-            total_wt = total_wt + wt[i];
-            total_tat = total_tat + tat[i];
-            System.out.println(" " + processes[i] + "\t " + at[i] + "\t " + bt[i] + "\t " + wt[i] + "\t " + tat[i]);
+            ct = at[i] + tat[i];  // Completion time is arrival time + turnaround time
+            total_wt += wt[i];
+            total_tat += tat[i];
+            System.out.println(" " + processes[i] + "\t " + at[i] + "\t " + bt[i] + "\t " + ct + "\t " + wt[i] + "\t " + tat[i]);
         }
 
         System.out.println("Average waiting time = " + (float) total_wt / (float) n);
